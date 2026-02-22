@@ -1,44 +1,45 @@
 package com.natesing.journal.controller;
 
 import com.natesing.journal.entity.JournalEntry;
+import com.natesing.journal.service.JournalEntryService;
+import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/journal")
+@Slf4j
 public class JournalEntryController {
 
-    private Map<Long, JournalEntry> journalEntries = new HashMap();
+    @Autowired
+    private JournalEntryService journalEntryService;
 
     @GetMapping("/all-journals")
     public List<JournalEntry> getAllJournalEntries() {
-        return new ArrayList<>(journalEntries.values());
+        return journalEntryService.getAllEntries();
     }
 
     @PostMapping
-    public void createEntry(@RequestBody JournalEntry req) {
-        journalEntries.put(req.getId(), req);
+    public JournalEntry createEntry(@RequestBody JournalEntry req) {
+        return journalEntryService.createEntry(req);
     }
 
     @GetMapping("id/{myId}")
-    public JournalEntry getJournalByID(@PathVariable Long myId) {
-        return journalEntries.get(myId);
+    public JournalEntry getJournalByID(@PathVariable ObjectId myId) {
+        return journalEntryService.getJournalByID(myId);
     }
 
     @DeleteMapping("id/{myId}")
-    public Boolean deleteEntryById(@PathVariable Long myId) {
-         journalEntries.remove(myId);
-         return true;
+    public Boolean deleteEntryById(@PathVariable ObjectId myId) {
+        return deleteEntryById(myId);
     }
 
     @PutMapping("id/{myId}")
-    public JournalEntry updateEntry(@PathVariable Long myId,@RequestBody JournalEntry req) {
-        return journalEntries.put(myId,req);
+    public JournalEntry updateEntry(@PathVariable ObjectId myId, @RequestBody JournalEntry req) {
+        return journalEntryService.updateJournalById(myId, req);
     }
 
 }
