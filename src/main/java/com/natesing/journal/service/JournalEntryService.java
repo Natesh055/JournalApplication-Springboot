@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class JournalEntryService {
@@ -24,8 +25,8 @@ public class JournalEntryService {
         return journalEntries;
     }
 
-    public JournalEntry getJournalByID(ObjectId myId) {
-        return journalRepository.findById(myId).orElse(null);
+    public Optional<JournalEntry> getJournalByID(ObjectId myId) {
+        return   journalRepository.findById(myId);
     }
 
     public Boolean deleteEntryById(ObjectId myId) {
