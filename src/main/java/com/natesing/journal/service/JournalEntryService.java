@@ -6,6 +6,7 @@ import com.natesing.journal.repository.JournalRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,12 +20,18 @@ public class JournalEntryService {
     @Autowired
     private UserService userService;
 
+    @Transactional
     public void saveEntry(JournalEntry entry, String userName) {
-        User byUserName = userService.findByUserName(userName);
-        entry.setDate(LocalDateTime.now());
-        JournalEntry saved = journalRepository.save(entry);
-        byUserName.getJournalEntries().add(saved);
-        userService.saveEntry(byUserName);
+        try {
+            User byUserName = userService.findByUserName(userName);
+            entry.setDate(LocalDateTime.now());
+            JournalEntry saved = journalRepository.save(entry);
+            byUserName.getJournalEntries().add(saved);
+            byUserName.setUserName(null);
+            userService.saveEntry(byUserName);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
     public void updateEntry(JournalEntry entry) {
         entry.setDate(LocalDateTime.now());
